@@ -1,0 +1,28 @@
+{
+    "name": "wribeiiro/danfe-generator",
+    "type": "project",
+    "description": "create an danfe pdf",
+    "keywords": ["nfe", "nfephp", "Danfe", "Danfce", "CCe" ],
+    "homepage": "https://github.com/wribeiiro/danfe-generator",
+    "license": ["LGPL-3.0-or-later+", "GPL-3.0-or-later", "MIT"],
+    "authors": [
+        {
+            "name": "Wellisson Ribeiro",
+            "email": "welleh10@gmail.com",
+            "homepage": "https://wribeiiro.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "nfephp-org/sped-nfe": "dev-master",
+        "nfephp-org/sped-da": "dev-master"
+    },
+    "config": {
+        "vendor-dir": "vendor"
+    },
+    "autoload": {
+        "psr-4": {
+          "Source\\": "src/"
+        }
+    }
+}
