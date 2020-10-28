@@ -6,6 +6,9 @@
 require '../vendor/autoload.php';
 
 use NFePHP\DA\NFe\Danfe;
+use NFePHP\DA\MDFe\Damdfe;
+use NFePHP\DA\CTe\Dacte;
+use NFePHP\DA\CTe\Dacce;
 use NFePHP\DA\NFe\Danfce;
 use NFePHP\DA\NFe\Daevento;
 
@@ -33,7 +36,11 @@ if (isset($_FILES['xml']) && !empty($_FILES['xml'])) {
 
             } else if (substr($filename, 23, 2) == '65') {
                 $print = new Danfce($xml);
-            } else {
+            } else if (substr($filename, 23, 2) == '57') {
+                $print = new Dacte($xml);
+            } else if (substr($filename, 23, 2) == '58') {
+                $print = new Damdfe($xml);
+            }else {
                 echo "<script>alert('Formato não permitido')</script>";
                 echo "<script>location.href='../index.php'</script>";
             }
