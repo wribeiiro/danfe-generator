@@ -28,7 +28,7 @@
 	<meta name="twitter:description" content="Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator">
 	<meta name="twitter:image" content="https://img.icons8.com/color/452/nota-fiscal-eletronica.png">
 	<meta name="twitter:site" content="https://www.wribeiiro.com/danfe-generator">
-	<meta name="twitter:creator" content="@adminfo.oficial">
+	<meta name="twitter:creator" content="@wribeiiro">
 	<meta property="og:title" content="Gerador de Danfe Online"/>
 	<meta property="og:type" content="website"/>
 	<meta property="og:url" content="https://www.wribeiiro.com/danfe-generator" />
