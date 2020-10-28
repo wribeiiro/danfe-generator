@@ -13,7 +13,7 @@ if (isset($_FILES['xml']) && !empty($_FILES['xml'])) {
 
     $filename = $_FILES['xml']['name'];
 
-    if (in_array(pathinfo($filename, PATHINFO_EXTENSION), array('.xml'))) {
+    if (in_array(pathinfo($filename, PATHINFO_EXTENSION), array('xml'))) {
         
         $filename = "../".$filename;
 
