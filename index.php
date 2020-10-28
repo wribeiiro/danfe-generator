@@ -1,20 +1,50 @@
 <!-- 
 	Name: Gerador de Danfe online
+	Description: Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator
 	Author: Wellisson Ribeiro
+	Gitbub: https://github.com/wribeiiro/
+	Page: https://wribeiiro.com/
 	Version: 1.0
-	Api: NFePHP
 -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 	<meta charset="utf-8">
-	<meta name="title" content="Gerador de Danfe">
-	<meta name="description" content="">
+	<meta name="title" content="Gerador de Danfe Online">
+	<meta name="description" content="Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator">
 	<meta name="author" content="Wellisson Ribeiro">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="place:location:latitude" content="-26.113468"/>
+	<meta property="place:location:longitude" content="-49.799151"/>
+	<meta property="business:contact_data:street_address" content="Mafra SC"/>
+	<meta property="business:contact_data:locality" content="Mafra SC"/>
+	<meta property="business:contact_data:postal_code" content="89300-677"/>
+	<meta property="business:contact_data:country_name" content="Brasil"/>
+	<meta property="business:contact_data:email" content="welleh10@gmail.com"/>
+	<meta property="business:contact_data:phone_number" content="(47)996142411"/>
+	<meta property="business:contact_data:website" content="https://www.wribeiiro.com/"/>
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Gerador de Danfe Online">
+	<meta name="twitter:description" content="Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator">
+	<meta name="twitter:image" content="https://img.icons8.com/color/452/nota-fiscal-eletronica.png">
+	<meta name="twitter:site" content="https://www.wribeiiro.com/danfe-generator">
+	<meta name="twitter:creator" content="@adminfo.oficial">
+	<meta property="og:title" content="Gerador de Danfe Online"/>
+	<meta property="og:type" content="website"/>
+	<meta property="og:url" content="https://www.wribeiiro.com/danfe-generator" />
+	<meta property="og:image" content="https://img.icons8.com/color/452/nota-fiscal-eletronica.png"/>
+	<meta property="og:description" content="Gerador de Danfe Online" />
+	<meta property="og:site_name" content="Gerador de Danfe Online"/>
+
+	<meta itemprop="name" content="Gerador de Danfe Online">
+	<meta itemprop="description" content="Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator">
+	<meta itemprop="image" content="https://img.icons8.com/color/452/nota-fiscal-eletronica.png">
+	<meta name="robots" content="index, follow">
+
 	<title>Gerador de Danfe Online</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css" integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE=" crossorigin="anonymous" />
+	<link rel="shortcut icon" href="https://img.icons8.com/color/452/nota-fiscal-eletronica.png" type="image/x-icon">
 </head>
 <body class="body" style="padding: 0; margin: 0; width: 100%">
 	<div class="container" style="padding-top: 5%; margin-bottom: 175px">
