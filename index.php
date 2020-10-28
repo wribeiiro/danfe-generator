@@ -87,7 +87,7 @@
 								<div class="row form-group">
 									<div class="col-md-12 form-group">
 										<label class="control-label" for="key">Chave de acesso:</label>
-										<input class="form-control" type="text" name="key" name="key" required>
+										<input class="form-control" type="text" name="key" required>
 									</div>
 									<div class="col-md-6 form-group">
 										<input type="submit" class="form-control btn btn-info" name="send" value="Gerar Danfe">
