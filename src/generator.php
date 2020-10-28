@@ -42,6 +42,10 @@ ini_set('display_errors', 'On');
 
                 header('Content-Type: application/pdf');
                 echo($pdf);
+
+                if (file_exists($filename))
+                    unlink($filename);
+
             } catch (\Exception $e) {
                 echo "Ocorreu um erro durante o processamento :" . $e->getMessage();
             }
