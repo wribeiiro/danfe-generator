@@ -11,10 +11,9 @@ use NFePHP\DA\NFe\Daevento;
 
 if (isset($_FILES['xml']) && !empty($_FILES['xml'])) { 
 
-    $filename  = $_FILES['xml']['name'];
-    $extension = strrchr($filename, '.'); 
+    $filename = $_FILES['xml']['name'];
 
-    if (in_array($extension, array('.xml'))) {
+    if (in_array(pathinfo($filename, PATHINFO_EXTENSION), array('.xml'))) {
         
         $filename = "../".$filename;
 
@@ -35,7 +34,8 @@ if (isset($_FILES['xml']) && !empty($_FILES['xml'])) {
             } else if (substr($filename, 23, 2) == '65') {
                 $print = new Danfce($xml);
             } else {
-                echo "Formato inválido ";
+                echo "<script>alert('Formato não permitido')</script>";
+                echo "<script>location.href='../index.php'</script>";
             }
 
             $pdf = $print->render();
@@ -47,9 +47,9 @@ if (isset($_FILES['xml']) && !empty($_FILES['xml'])) {
             echo($pdf);
 
         } catch (\Exception $e) {
-            echo "Ocorreu um erro durante o processamento :" . $e->getMessage();
+            echo "<script>alert('Ocorreu um erro durante o processamento: ". $e->getMessage()."')</script>";
+            echo "<script>location.href='../index.php'</script>";
         }
-        
     } else {
         echo "<script>alert('Arquivo invalido! Verifique se o mesmo possui a extensão .xml !')</script>";
         echo "<script>location.href='../index.php'</script>";
