@@ -43,7 +43,10 @@ if (isset($_FILES['xml']) && !empty($_FILES['xml'])) {
             if (file_exists($filename))
                 unlink($filename);
 
-            header('Content-Type: application/pdf');
+            $pdfName = str_replace(".xml", "", $_FILES['xml']['name']);
+
+            header("Content-Disposition: attachment; filename=$pdfName");
+            header("Content-Type: application/pdf");
             echo($pdf);
 
         } catch (\Exception $e) {
