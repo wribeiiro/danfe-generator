@@ -17,21 +17,17 @@ use Exception;
 use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
-use NFePHP\DA\Legacy\Common;
+use NFePHP\DA\Common\DaCommon;
 use Com\Tecnick\Barcode\Barcode;
 use DateTime;
 
-class Danfce extends Common
+class Danfce extends DaCommon
 {
     protected $papel;
     protected $paperwidth = 80;
-    protected $creditos;
     protected $xml; // string XML NFe
     protected $logomarca=''; // path para logomarca em jpg
     protected $formatoChave="#### #### #### #### #### #### #### #### #### #### ####";
-    protected $debugMode=0; //ativa ou desativa o modo de debug
-    protected $tpImp; //ambiente
-    protected $fontePadrao='Times';
     protected $nfeProc;
     protected $nfe;
     protected $infNFe;
@@ -54,7 +50,7 @@ class Danfce extends Common
     protected $urlQR = '';
     protected $pdf;
     protected $margemInterna = 2;
-    protected $hMaxLinha = 9;
+    protected $hMaxLinha = 5;
     protected $hBoxLinha = 6;
     protected $hLinha = 3;
   
@@ -62,46 +58,22 @@ class Danfce extends Common
      * __contruct
      *
      * @param string $docXML
-     * @param string $sPathLogo
-     * @param string $mododebug
-     * @param string $idToken
-     * @param string $Token
      */
     public function __construct(
-        $docXML = '',
-        $sPathLogo = '',
-        $mododebug = 0,
-        // habilita os erros do sistema
-        $idToken = '',
-        $emitToken = '',
-        $urlQR = ''
+        $docXML
     ) {
-        if (is_numeric($mododebug)) {
-            $this->debugMode = $mododebug;
-        }
-        if ($this->debugMode) {
-            //ativar modo debug
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            //desativar modo debug
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
         $this->xml = $docXML;
-        $this->logomarca = $sPathLogo;
-        
-        $this->fontePadrao = empty($fonteDANFE) ? 'Times' : $fonteDANFE;
-        $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
-        $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        
+      
         if (!empty($this->xml)) {
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
+            $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+            if ($this->getTagValue($this->ide, "mod") != '65') {
+                throw new InvalidArgumentException("O xml do DANFE deve ser uma NFC-e modelo 65");
+            }
             $this->nfeProc = $this->dom->getElementsByTagName("nfeProc")->item(0);
             $this->nfe = $this->dom->getElementsByTagName("NFe")->item(0);
             $this->infNFe = $this->dom->getElementsByTagName("infNFe")->item(0);
-            $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
             $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
             $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
             $this->det = $this->dom->getElementsByTagName("det");
@@ -111,7 +83,7 @@ class Danfce extends Common
             $this->tpImp = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
             $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
             $this->tpEmis = $this->dom->getValue($this->ide, "tpEmis");
-            
+                
             //se for o layout 4.0 busca pelas tags de detalhe do pagamento
             //senao, busca pelas tags de pagamento principal
             if ($this->infNFe->getAttribute("versao") == "4.00") {
@@ -127,69 +99,54 @@ class Danfce extends Common
             ? $this->dom->getElementsByTagName('qrCode')->item(0)->nodeValue : null;
         $this->urlChave = !empty($this->dom->getElementsByTagName('urlChave')->item(0)->nodeValue)
             ? $this->dom->getElementsByTagName('urlChave')->item(0)->nodeValue : null;
-        if ($this->getTagValue($this->ide, "mod") != '65') {
-            throw new InvalidArgumentException("O xml do DANFE deve ser uma NFC-e modelo 65");
-        }
-    }
-    
-    /**
-     * Ativa ou desativa o modo debug
-     * @param bool $activate
-     * @return bool
-     */
-    public function debugMode($activate = null)
-    {
-        if (isset($activate) && is_bool($activate)) {
-            $this->debugmode = $activate;
-        }
-        if ($this->debugmode) {
-            //ativar modo debug
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            //desativar modo debug
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
-        return $this->debugmode;
-    }
-    
-    /**
-     * Add the credits to the integrator in the footer message
-     * @param string $message
-     */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
     }
     
     /**
      * Dados brutos do PDF
      * @return string
      */
-    public function render()
-    {
+    public function render(
+        $logo = ''
+    ) {
         if (empty($this->pdf)) {
-            $this->monta();
+            $this->monta($logo);
         }
         return $this->pdf->getPdf();
     }
     
-    
-    public function paperWidth($width = 80)
+    /**
+     * Seta a largura do papel de impressão
+     * @param int $width
+     */
+    public function setPaperWidth($width = 80)
     {
-        if (is_int($width) && $width > 60) {
-            $this->paperwidth = $width;
-        }
-        return $this->paperwidth;
+        $this->paperwidth = $width;
     }
     
-    public function monta(
-        $logo = null,
-        $depecNumReg = '',
-        $logoAlign = 'C'
+    /**
+     * Parametros de impressão
+     * @param string $orientacao
+     * @param string $papel
+     * @param int $margSup
+     * @param int $margEsq
+     */
+    public function printParameters($orientacao = '', $papel = 'A4', $margSup = 2, $margEsq = 2)
+    {
+        //do nothing
+    }
+    
+    /**
+     *
+     * @param string $logo
+     */
+    protected function monta(
+        $logo = ''
     ) {
-        $this->logomarca = $logo;
+        $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+        $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo, true);
+        }
         $qtdItens = $this->det->length;
         $qtdPgto = $this->pag->length;
         $hMaxLinha = $this->hMaxLinha;
@@ -202,29 +159,28 @@ class Danfce extends Common
             $this->textoAdic .= !empty($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue) ?
             'Inf. Contribuinte: '.
             trim($this->anfaveaDANFE($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue)) : '';
-            if (!empty($this->textoAdic)) {
-                $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
-                $alinhas = explode("\n", $this->textoAdic);
-                $numlinhasdados = 0;
-                $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
-                $tempPDF->setFont('times', '', '8'); // seta a font do PDF
-                foreach ($alinhas as $linha) {
-                    $linha = trim($linha);
-                    $numlinhasdados += $tempPDF->wordWrap($linha, 76 - 0.2);
-                }
-                $hdadosadic = round(($numlinhasdados + 1) * $tempPDF->fontSize, 0);
-                if ($hdadosadic < 5) {
-                    $hdadosadic = 5;
-                }
-                // seta o tamanho do papel
-                $tamPapelVert += $hdadosadic;
-            }
         }
+        if (!empty($this->textoAdic)) {
+            $this->textoAdic = str_replace([';', '|'], "\n", $this->textoAdic);
+            $alinhas = explode("\n", $this->textoAdic);
+            $numlinhasdados = 0;
+            $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
+            $tempPDF->setFont('times', '', '8'); // seta a font do PDF
+            foreach ($alinhas as $linha) {
+                $linha = trim($linha);
+                $numlinhasdados += $tempPDF->wordWrap($linha, 76 - 0.2);
+            }
+            $hdadosadic = round(($numlinhasdados + 1) * $tempPDF->fontSize, 0);
+            if ($hdadosadic < 5) {
+                $hdadosadic = 5;
+            }
+            // seta o tamanho do papel
+            $tamPapelVert += $hdadosadic;
+        }
+        
         $this->orientacao = 'P';
         $this->papel = [$this->paperwidth, $tamPapelVert];
-        $this->logoAlign = $logoAlign;
-        //$this->situacao_externa = $situacaoExterna;
-        $this->numero_registro_dpec = $depecNumReg;
+        $this->logoAlign = 'L';
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
@@ -257,8 +213,8 @@ class Danfce extends Common
         $this->pdf->textBox(0, 0, $maxW, $maxH); // POR QUE PRECISO DESA LINHA?
         $hcabecalho = 27;//para cabeçalho (dados emitente mais logomarca)  (FIXO)
         $hcabecalhoSecundario = 10 + 3;//para cabeçalho secundário (cabeçalho sefaz) (FIXO)
-        $hprodutos = $hLinha + ($qtdItens * $hMaxLinha) ;//box poduto
-        $hTotal = 12; //box total (FIXO)
+        $hprodutos = $hLinha + ($qtdItens * $hMaxLinha)+2 ;//box poduto
+        $hTotal = 17; //box total (FIXO)
         $hpagamentos = $hLinha + ($qtdPgto * $hLinha) + 3;//para pagamentos
         if (!empty($this->vTroco)) {
             $hpagamentos += $hLinha;
@@ -307,7 +263,7 @@ class Danfce extends Common
             $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos
             + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente + $hQRCode;
             $hInfAdic = 0;
-            $y = $this->infAdic($x, $y, $hInfAdic);
+            $y = $this->blocoInfAdic($x, $y, $hInfAdic);
         }
     }
     
@@ -346,8 +302,12 @@ class Danfce extends Common
         if (!empty($this->logomarca)) {
             $xImg = $margemInterna;
             $yImg = $margemInterna + 1;
-            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
-            $this->pdf->image($this->logomarca, $xImg, $yImg, 30, 22.5, $type);
+            $logoInfo = getimagesize($this->logomarca);
+            $logoWmm = ($logoInfo[0]/72)*25.4;
+            $logoHmm = ($logoInfo[1]/72)*25.4;
+            $nImgW = 30;
+            $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
+            $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
             $xRs = ($maxW*0.4) + $margemInterna;
             $wRs = ($maxW*0.6);
             $alignEmit = 'L';
@@ -438,7 +398,7 @@ class Danfce extends Common
                 $prod       = $thisItem->getElementsByTagName("prod")->item(0);
                 $nitem      = $thisItem->getAttribute("nItem");
                 $cProd      = $this->getTagValue($prod, "cProd");
-                $xProd      = $this->getTagValue($prod, "xProd");
+                $xProd      = substr($this->getTagValue($prod, "xProd"), 1, 45);
                 $qCom       = number_format($this->getTagValue($prod, "qCom"), 2, ",", ".");
                 $uCom       = $this->getTagValue($prod, "uCom");
                 $vUnCom     = number_format($this->getTagValue($prod, "vUnCom"), 2, ",", ".");
@@ -565,6 +525,7 @@ class Danfce extends Common
         $vNF = $this->getTagValue($this->ICMSTot, "vNF");
         $vDesc  = $this->getTagValue($this->ICMSTot, "vDesc");
         $vFrete = $this->getTagValue($this->ICMSTot, "vFrete");
+        $vOutro = $this->getTagValue($this->ICMSTot, "vOutro");
         $vTotTrib = $this->getTagValue($this->ICMSTot, "vTotTrib");
         $texto = "Qtd. Total de Itens";
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
@@ -593,14 +554,21 @@ class Danfce extends Common
         $texto = "R$ " . $vFrete;
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
         $this->pdf->textBox($xValor, $yFrete, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
-        $yTotalFinal = $y + ($hLinha*4);
+        $yOutro= $y + ($hLinha*4);
+        $texto = "Outro";
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
+        $this->pdf->textBox($x, $yOutro, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+        $texto = "R$ " . $vOutro;
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
+        $this->pdf->textBox($xValor, $yOutro, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
+        $yTotalFinal = $y + ($hLinha*5);
         $texto = "Total";
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
         $this->pdf->textBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = "R$ " . $vNF;
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
         $this->pdf->textBox($xValor, $yTotalFinal, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
-        $yTotalFinal = $y + ($hLinha*5);
+        $yTotalFinal = $y + ($hLinha*6.3);
         $texto = "Informação dos Tributos Totais Incidentes";
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>''];
         $this->pdf->textBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -859,7 +827,7 @@ class Danfce extends Common
             . $dt->format('d/m/Y H:i:s'), $aFontTex, 'C', 'C', 0, '', false);
     }
    
-    protected function infAdic($x = 0, $y = 0, $h = 0)
+    protected function blocoInfAdic($x = 0, $y = 0, $h = 0)
     {
         $y += 17;
         $margemInterna = $this->margemInterna;
@@ -872,7 +840,9 @@ class Danfce extends Common
         $texto = "INFORMAÇÃO ADICIONAL";
         if (isset($this->nfeProc) && $this->nfeProc->getElementsByTagName("xMsg")->length) {
             $y += 3;
-            $texto = $texto . ' ' . $this->nfeProc->getElementsByTagName("xMsg")->item(0)->nodeValue;
+            $msg = $this->nfeProc->getElementsByTagName("xMsg")->item(0)->nodeValue;
+            $msg = str_replace('|', "\n", $msg);
+            $texto .= " {$msg}";
             $heigthText = $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
             $y += 4;
         } else {
@@ -1061,7 +1031,8 @@ class Danfce extends Common
         return $cStat == '101' ||
                 $cStat == '151' ||
                 $cStat == '135' ||
-                $cStat == '155';
+                $cStat == '155' ||
+                $this->cancelFlag === true;
     }
 
     protected function checkDenegada()

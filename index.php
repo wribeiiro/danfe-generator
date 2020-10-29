@@ -1,6 +1,6 @@
 <!-- 
-	Name: Gerador de Danfe online
-	Description: Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator
+	Name: Gerador PDF de Documentos Eletrônicos
+	Description: Gere PDF da sua NFe, NFCe, MDFe e CTe facilmente usando apenas seu XML, através do Danfe Generator gratuitamente.
 	Author: Wellisson Ribeiro
 	Gitbub: https://github.com/wribeiiro/
 	Page: https://wribeiiro.com/
@@ -10,8 +10,8 @@
 <html lang="pt-br">
 <head>
 	<meta charset="utf-8">
-	<meta name="title" content="Gerador de Danfe Online">
-	<meta name="description" content="Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator">
+	<meta name="title" content="Gerador PDF de Documentos Eletrônicos">
+	<meta name="description" content="Gere PDF da sua NFe, NFCe, MDFe e CTe facilmente usando apenas seu XML, através do Danfe Generator gratuitamente.">
 	<meta name="author" content="Wellisson Ribeiro">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta property="place:location:latitude" content="-26.113468"/>
@@ -24,35 +24,37 @@
 	<meta property="business:contact_data:phone_number" content="(47)996142411"/>
 	<meta property="business:contact_data:website" content="https://www.wribeiiro.com/"/>
 	<meta name="twitter:card" content="summary">
-	<meta name="twitter:title" content="Gerador de Danfe Online">
-	<meta name="twitter:description" content="Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator">
+	<meta name="twitter:title" content="Gerador PDF de Documentos Eletrônicos">
+	<meta name="twitter:description" content="Gere PDF da sua NFe, NFCe, MDFe e CTe facilmente usando apenas seu XML, através do Danfe Generator gratuitamente.">
 	<meta name="twitter:image" content="https://img.icons8.com/color/452/nota-fiscal-eletronica.png">
 	<meta name="twitter:site" content="https://www.wribeiiro.com/danfe-generator">
 	<meta name="twitter:creator" content="@wribeiiro">
-	<meta property="og:title" content="Gerador de Danfe Online"/>
+	<meta property="og:title" content="Gerador PDF de Documentos Eletrônicos"/>
 	<meta property="og:type" content="website"/>
 	<meta property="og:url" content="https://www.wribeiiro.com/danfe-generator" />
 	<meta property="og:image" content="https://img.icons8.com/color/452/nota-fiscal-eletronica.png"/>
-	<meta property="og:description" content="Gerador de Danfe Online" />
-	<meta property="og:site_name" content="Gerador de Danfe Online"/>
+	<meta property="og:description" content="Gerador PDF de Documentos Eletrônicos" />
+	<meta property="og:site_name" content="Gerador PDF de Documentos Eletrônicos"/>
 
-	<meta itemprop="name" content="Gerador de Danfe Online">
-	<meta itemprop="description" content="Gere PDF da sua Nota Fiscal Eletrônica, e Nota Fiscal de Consumidor facilmente usando seu XML, através do Danfe Generator">
+	<meta itemprop="name" content="Gerador PDF de Documentos Eletrônicos">
+	<meta itemprop="description" content="Gere PDF da sua NFe, NFCe, MDFe e CTe facilmente usando apenas seu XML, através do Danfe Generator gratuitamente.">
 	<meta itemprop="image" content="https://img.icons8.com/color/452/nota-fiscal-eletronica.png">
 	<meta name="robots" content="index, follow">
 
-	<title>Gerador de Danfe Online</title>
+	<title>Gerador PDF de Documentos Eletrônicos</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css" integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE=" crossorigin="anonymous" />
 	<link rel="shortcut icon" href="https://img.icons8.com/color/452/nota-fiscal-eletronica.png" type="image/x-icon">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700|Open+Sans:300,400,600,700,800" rel="stylesheet">
 </head>
-<body class="body" style="padding: 0; margin: 0; width: 100%">
-	<div class="container" style="padding-top: 5%; margin-bottom: 175px">
+<body class="body" style="padding: 0; margin: 0; width: 100%; font-family:Montserrat,sans-serif;">
+	<div class="container" style="padding-top: 5%; margin-bottom: 150px">
 		<div class="row">
 			<div class="col-md-12 center-block">
 				<div class="row text-center">
 					<h1 style="font-size: 5em">DANFEOnline</h1>
-					<p>Repositório de NF-e, Gerador de DANFE.</p>
+					<p>Gerador de Documentos Online</p>
+					<span>DANFE, DANFCE, DAMDFE, DACTE</span>
 				</div>
 			</div>
 		</div>
@@ -63,34 +65,19 @@
                         <li class="active">
                         	<a href="#xml_tab" data-toggle="tab">XML</a>
                         </li>
-                        <li>
-                        	<a href="#key_tab" data-toggle="tab">Chave de Acesso</a>
-                        </li>
                     </ul>
 					<div class="tab-content">
 	                	<div class="tab-pane fade in active form-group" id="xml_tab">
 							<form class="form form-group" action="src/generator.php" method="POST" enctype="multipart/form-data" style="margin-top: 25px"> 
 								<div class="row form-group">
 									<div class="col-md-12 form-group">
-										<input type="file" name="xml" id="xml" required>
-									</div>
-
-									<div class="col-md-6 form-group">
-										<input type="submit" class="form-control btn btn-info" name="send" value="Gerar Danfe">
+										<input class="" type="file" name="xml" id="xml" accept=".xml" required>
 									</div>
 								</div>
-							</form>
-						</div>
 
-						<div class="tab-pane fade in form-group" id="key_tab">
-							<form class="form form-group" action="src/generator.php" method="POST" style="margin-top: 25px">
-								<div class="row form-group">
-									<div class="col-md-12 form-group">
-										<label class="control-label" for="key">Chave de acesso:</label>
-										<input class="form-control" type="text" name="key" required>
-									</div>
-									<div class="col-md-6 form-group">
-										<input type="submit" class="form-control btn btn-info" name="send" value="Gerar Danfe">
+								<div class="row">
+									<div class="col-md-4 col-xs-12 form-group">
+										<button type="submit" class="form-control btn btn-danger"><i class="fas fa-file-pdf"></i> Gerar PDF</button>
 									</div>
 								</div>
 							</form>
@@ -104,7 +91,7 @@
 	<div class="container">
 		<div class="row text-center">
 			<div class="col-md-12">
-				<a class="text-center" href="#" style="text-decoration: none">
+				<a class="text-center" href="https://github.com/wribeiiro/" style="text-decoration: none; color: #303030">
 					Made with 
 					<img src="https://cdn.pixabay.com/photo/2017/09/23/16/33/pixel-heart-2779422_960_720.png" width="16" alt="Wellisson Ribeiro"> Wellisson Ribeiro
 				</a>

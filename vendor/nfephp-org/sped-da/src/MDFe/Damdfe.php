@@ -17,24 +17,16 @@ namespace NFePHP\DA\MDFe;
 
 use Com\Tecnick\Barcode\Barcode;
 use NFePHP\DA\Legacy\Dom;
-use NFePHP\DA\Legacy\Common;
 use NFePHP\DA\Legacy\Pdf;
+use NFePHP\DA\Common\DaCommon;
 
-class Damdfe extends Common
+class Damdfe extends DaCommon
 {
-    protected $logoAlign = 'L'; //alinhamento do logo
+
     protected $yDados = 0;
-    protected $debugmode = false; //ativa ou desativa o modo de debug
-    protected $pdf; // objeto fpdf()
     protected $xml; // string XML NFe
-    protected $logomarca = ''; // path para logomarca em jpg
     protected $errMsg = ''; // mesagens de erro
     protected $errStatus = false;// status de erro TRUE um erro ocorreu false sem erros
-    protected $orientacao = 'P'; //orientação da DANFE P-Retrato ou L-Paisagem
-    protected $papel = 'A4'; //formato do papel
-    protected $fontePadrao = 'Times'; //Nome da Fonte para gerar o DANFE
-    protected $wPrint; //largura imprimivel
-    protected $hPrint; //comprimento imprimivel
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 2;
     protected $id;
@@ -50,8 +42,11 @@ class Damdfe extends Common
     protected $nProt;
     protected $tpEmis;
     protected $qrCodMDFe;
+    /**
+     * @var string
+     */
+    protected $logoAlign = 'L';
     private $dom;
-    private $creditos;
 
     /**
      * __construct
@@ -59,31 +54,9 @@ class Damdfe extends Common
      * @param string $xml Arquivo XML da MDFe
      */
     public function __construct(
-        $xml = ''
+        $xml
     ) {
-        $this->debugMode();
         $this->loadDoc($xml);
-    }
-
-    /**
-     * Ativa ou desativa o modo debug
-     *
-     * @param  bool $activate
-     * @return bool
-     */
-    public function debugMode($activate = null)
-    {
-        if (isset($activate) && is_bool($activate)) {
-            $this->debugmode = $activate;
-        }
-        if ($this->debugmode) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
-        return $this->debugmode;
     }
 
     private function loadDoc($xml)
@@ -177,6 +150,21 @@ class Damdfe extends Common
             }
         }
     }
+
+    protected function monta(
+        $logo = ''
+    ) {
+        $this->pdf = '';
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo);
+        }
+        //pega o orientação do documento
+        if (empty($this->orientacao)) {
+            $this->orientacao = 'P';
+        }
+        $this->buildMDFe();
+    }
+
 
     /**
      * buildMDFe
@@ -310,7 +298,9 @@ class Damdfe extends Common
         } else {
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
-        $ie = 'IE: ' . $this->formatField($this->IE, '##/########');
+        $ie = 'IE: ' . strlen($this->IE) == 9
+            ? $this->formatField($this->IE, '###/#######')
+            : $this->formatField($this->IE, '###.###.###.###');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
@@ -407,7 +397,7 @@ class Damdfe extends Common
         $h = 20;
         $oldY += $h;
         $this->pdf->textBox($x, $y, $w, $h);
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             //largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
@@ -461,7 +451,9 @@ class Damdfe extends Common
         } else {
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
-        $ie = 'IE: ' . $this->formatField($this->IE, '###/#######');
+        $ie = 'IE: ' . strlen($this->IE) == 9
+            ? $this->formatField($this->IE, '###/#######')
+            : $this->formatField($this->IE, '###.###.###.###');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
@@ -510,7 +502,7 @@ class Damdfe extends Common
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
             $this->pdf->textBox($x, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->setTextColor(0, 0, 0);
-        } elseif ($cStat->item(0)->nodeValue == '101') {
+        } elseif ($cStat->item(0)->nodeValue == '101' || $this->cancelFlag === true) {
             $x = 10;
             if ($this->orientacao == 'P') {
                 $yy = round($this->hPrint * 2 / 3, 0);
@@ -888,7 +880,8 @@ class Damdfe extends Common
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
-                $texto = $this->valePed->item($i)->getElementsByTagName('CNPJForn')->item(0)->nodeValue;
+                $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJPg');
+                $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
                 $this->pdf->textBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
             }
@@ -900,7 +893,8 @@ class Damdfe extends Common
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
-                $texto = $this->valePed->item($i)->getElementsByTagName('CNPJPg')->item(0)->nodeValue;
+                $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJForn');
+                $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
                 $this->pdf->textBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
             }
@@ -1184,54 +1178,26 @@ class Damdfe extends Common
     {
         $maxW = $this->wPrint;
         $x2 = $maxW;
-        $this->pdf->textBox($x, $y, $x2, 30);
+        if ($this->orientacao == 'P') {
+            $h = 145;
+        } else {
+            $h = 45;
+        }
+        $this->pdf->textBox($x, $y, $x2, $h);
         $texto = 'Observação
         ' . $this->infCpl;
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pdf->textBox($x, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $y = $this->hPrint - 4;
-        $texto = "Impresso em  " . date('d/m/Y H:i:s');
+        //$y = $this->hPrint - 4;
+        $y = $this->hPrint+8;
+        $texto = "Impresso em  " . date('d/m/Y H:i:s') . ' ' . $this->creditos;
         $w = $this->wPrint - 4;
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->creditos . "  Powered by NFePHP®";
-        $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
-    }
-
-    public function monta(
-        $logo = '',
-        $orientacao = 'P',
-        $papel = 'A4',
-        $logoAlign = 'L'
-    ) {
-        $this->pdf = '';
-        $this->logomarca = $logo;
-        $this->orientacao = $orientacao;
-        $this->papel = $papel;
-        $this->logoAlign = $logoAlign;
-        $this->buildMDFe();
-    }
-
-    /**
-     * Dados brutos do PDF
-     *
-     * @return string
-     */
-    public function render()
-    {
-        if (empty($this->pdf)) {
-            $this->monta();
+        $texto = '';
+        if ($this->powered) {
+            $texto = "Powered by NFePHP®";
         }
-        return $this->pdf->getPdf();
-    }
-
-    /**
-     * Add the credits to the integrator in the footer message
-     *
-     * @param string $message
-     */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
+        $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 }

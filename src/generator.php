@@ -1,70 +1,47 @@
 <?php
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', 'On');
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
 
 require '../vendor/autoload.php';
+require './function.php';
 
 use NFePHP\DA\NFe\Danfe;
 use NFePHP\DA\MDFe\Damdfe;
 use NFePHP\DA\CTe\Dacte;
-use NFePHP\DA\CTe\Dacce;
 use NFePHP\DA\NFe\Danfce;
-use NFePHP\DA\NFe\Daevento;
 
-if (isset($_FILES['xml']) && !empty($_FILES['xml'])) { 
-
-    $filename = $_FILES['xml']['name'];
-
-    if (in_array(pathinfo($filename, PATHINFO_EXTENSION), array('xml'))) {
-        
-        $filename = "../".$filename;
-
-        if (!move_uploaded_file($_FILES['xml']['tmp_name'], $filename))
-            die("Não foi possível gerar danfe do arquivo espeficiado");
-
-        $xml = file_get_contents($filename);
-
-        try {
-            
-            if (substr($filename, 23, 2) == '55')  {
-
-                if (substr($filename, -11) == 'proccce.xml') 
-                    $print = new Daevento($xml, []);
-                else 
-                    $print = new Danfe($xml);
-
-            } else if (substr($filename, 23, 2) == '65') {
-                $print = new Danfce($xml);
-            } else if (substr($filename, 23, 2) == '57') {
-                $print = new Dacte($xml);
-            } else if (substr($filename, 23, 2) == '58') {
-                $print = new Damdfe($xml);
-            }else {
-                echo "<script>alert('Formato não permitido')</script>";
-                echo "<script>location.href='../index.php'</script>";
-            }
-
-            $pdf = $print->render();
-
-            if (file_exists($filename))
-                unlink($filename);
-
-            $pdfName = str_replace(".xml", "", $_FILES['xml']['name']);
-
-            header("Content-Disposition: attachment; filename=$pdfName");
-            header("Content-Type: application/pdf");
-            echo($pdf);
-
-        } catch (\Exception $e) {
-            echo "<script>alert('Ocorreu um erro durante o processamento: ". $e->getMessage()."')</script>";
-            echo "<script>location.href='../index.php'</script>";
-        }
-    } else {
-        echo "<script>alert('Arquivo invalido! Verifique se o mesmo possui a extensão .xml !')</script>";
-        echo "<script>location.href='../index.php'</script>";
-    }	
-} else {
+if (!isset($_FILES['xml']) && empty($_FILES['xml'])) { 
     echo "<script>alert('Nenhum arquivo foi selecionado!')</script>";
     echo "<script>location.href='../index.php'</script>";
+    exit;
+}
+
+$fileXml  = "../".$_FILES['xml']['name'];
+$xmlParse = uploadFile($fileXml);
+
+try {
+    
+    $accessKey = getAccessKey($xmlParse);
+    $model     = checkFileType($accessKey);
+    
+    if (!in_array($model, MODEL_PERMISSION)) {
+        echo "<script>alert('Formato não permitido')</script>";
+        echo "<script>location.href='../'</script>";
+        exit;
+    }
+
+    $xmlContents = file_get_contents($fileXml);
+    
+    if ($model === 55) $print = new Danfe($xmlContents);
+    if ($model === 65) $print = new Danfce($xmlContents);
+    if ($model === 57) $print = new Dacte($xmlContents);
+    if ($model === 58) $print = new Damdfe($xmlContents);
+    
+    deleteXml($fileXml);
+    printPdf($accessKey, $print->render());
+
+} catch (\Exception $e) {
+    echo "<script>alert('Ocorreu um erro durante o processamento: ". $e->getMessage()."')</script>";
+    echo "<script>location.href='../'</script>";
 }

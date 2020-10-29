@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdfeProc versao="3.00" xmlns="http://www.portalfiscal.inf.br/mdfe">
+    <MDFe xmlns="http://www.portalfiscal.inf.br/mdfe">
+        <infMDFe Id="MDFe50190514421031000120580010000000021484933226" versao="3.00">
+            <ide>
+                <cUF>50</cUF>
+                <tpAmb>2</tpAmb>
+                <tpEmit>2</tpEmit>
+                <mod>58</mod>
+                <serie>1</serie>
+                <nMDF>2</nMDF>
+                <cMDF>48493662</cMDF>
+                <cDV>6</cDV>
+                <modal>1</modal>
+                <dhEmi>2019-05-31T16:34:04-03:00</dhEmi>
+                <tpEmis>1</tpEmis>
+                <procEmi>0</procEmi>
+                <verProc>1.0.1</verProc>
+                <UFIni>MS</UFIni>
+                <UFFim>MS</UFFim>
+                <infMunCarrega>
+                    <cMunCarrega>5008305</cMunCarrega>
+                    <xMunCarrega>Três Lagoas</xMunCarrega>
+                </infMunCarrega>
+            </ide>
+            <emit>
+                <CNPJ>99999999999999</CNPJ>
+                <IE>999999999999</IE>
+                <xNome>EMPRESA TESTE</xNome>
+                <enderEmit>
+                    <xLgr>RUA DAS FLORES</xLgr>
+                    <nro>198</nro>
+                    <xBairro>CENTRO</xBairro>
+                    <cMun>5008305</cMun>
+                    <xMun>Três Lagoas</xMun>
+                    <CEP>79601010</CEP>
+                    <UF>MS</UF>
+                    <fone>6792368260</fone>
+                    <email>teste@teste.com.br</email>
+                </enderEmit>
+            </emit>
+            <infModal versaoModal="3.00">
+                <rodo>
+                    <infANTT>
+                        <RNTRC>12345678</RNTRC>
+                    </infANTT>
+                    <veicTracao>
+                        <placa>ASD9808</placa>
+                        <tara>0</tara>
+                        <capKG>0</capKG>
+                        <capM3>0</capM3>
+                        <condutor>
+                            <xNome>Darth Vader</xNome>
+                            <CPF>67163571062</CPF>
+                        </condutor>
+                        <tpRod>01</tpRod>
+                        <tpCar>01</tpCar>
+                        <UF>AC</UF>
+                    </veicTracao>
+                </rodo>
+            </infModal>
+            <infDoc>
+                <infMunDescarga>
+                    <cMunDescarga>5003702</cMunDescarga>
+                    <xMunDescarga>Dourados</xMunDescarga>
+                    <infNFe>
+                        <chNFe>50190524922857000127550010000000491085857329</chNFe>
+                    </infNFe>
+                </infMunDescarga>
+            </infDoc>
+            <tot>
+                <qCTe>0</qCTe>
+                <qNFe>1</qNFe>
+                <qMDFe>0</qMDFe>
+                <vCarga>120.00</vCarga>
+                <cUnid>01</cUnid>
+                <qCarga>200.0000</qCarga>
+            </tot>
+            <infAdic/>
+        </infMDFe>
+    </MDFe>
+    <protMDFe versao="3.00">
+        <infProt xmlns="http://www.portalfiscal.inf.br/mdfe" Id="MDFe950190000003473">
+            <tpAmb>2</tpAmb>
+            <verAplic>RS20190412161731</verAplic>
+            <chMDFe>50190514421031000120580010000000021484932626</chMDFe>
+            <dhRecbto>2019-05-31T17:33:54-03:00</dhRecbto>
+            <nProt>950190000003473</nProt>
+            <digVal>w1C7UisaF7VpbynkCCR25raAsQQ=</digVal>
+            <cStat>100</cStat>
+            <xMotivo>Autorizado o uso do MDF-e</xMotivo>
+        </infProt>
+    </protMDFe>
+</mdfeProc>
