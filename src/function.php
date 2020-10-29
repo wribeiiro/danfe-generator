@@ -43,7 +43,7 @@ function checkModelDocument(string $accessKey): int {
 }
 
 function printPdf(string $pdfName, string $pdf): void {
-    header("Content-Disposition: attachment; filename=$pdfName.pdf");
+    header("Content-Disposition: inline; filename=$pdfName.pdf");
     header("Content-Type: application/pdf");
     echo($pdf);
 }
