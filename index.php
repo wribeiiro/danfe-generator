@@ -48,7 +48,7 @@
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700|Open+Sans:300,400,600,700,800" rel="stylesheet">
 </head>
 <body class="body" style="padding: 0; margin: 0; width: 100%; font-family:Montserrat,sans-serif;">
-	<div class="container" style="padding-top: 5%; margin-bottom: 150px">
+	<div class="container" style="padding-top: 5%; margin-bottom: 120px">
 		<div class="row">
 			<div class="col-md-12 center-block">
 				<div class="row text-center">
